@@ -4,7 +4,8 @@ import com.myflow.my_flow.constants.Messages;
 import com.myflow.my_flow.dto.requests.room.RequestCreateRoomDTO;
 import com.myflow.my_flow.dto.requests.room.RequestJoinRoomDTO;
 import com.myflow.my_flow.dto.responses.BasicResponseDTO;
-import com.myflow.my_flow.dto.responses.room.RoomDTO;
+import com.myflow.my_flow.dto.responses.room.CreateRoomDTO;
+import com.myflow.my_flow.dto.responses.room.JoinRoomDTO;
 import com.myflow.my_flow.services.room.RoomService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -21,13 +22,13 @@ public class RoomController {
   }
 
   @PostMapping("/create")
-  public ResponseEntity<BasicResponseDTO<RoomDTO>> createRoom(
+  public ResponseEntity<BasicResponseDTO<CreateRoomDTO>> createRoom(
       @Valid @RequestBody RequestCreateRoomDTO requestCreateRoomDto
       ) {
-    RoomDTO newRoom = this.roomService.createRoom(requestCreateRoomDto.getDuration());
+    CreateRoomDTO newRoom = this.roomService.createRoom(requestCreateRoomDto.getDuration());
 
     return ResponseEntity.status(HttpStatus.CREATED).body(
-        BasicResponseDTO.<RoomDTO>builder()
+        BasicResponseDTO.<CreateRoomDTO>builder()
             .data(newRoom)
             .message(Messages.SUCCESS.getValue())
             .build()
@@ -35,14 +36,21 @@ public class RoomController {
   }
 
   @PostMapping("/{roomId}/join")
-  public ResponseEntity<BasicResponseDTO<Void>> joinRoom(
-      @PathVariable String roomId,
-      @Valid @RequestBody RequestJoinRoomDTO requestJoinRoomDTO
+  public ResponseEntity<BasicResponseDTO<JoinRoomDTO>> joinRoom(
+      @PathVariable String roomId,  @Valid @RequestBody RequestJoinRoomDTO requestJoinRoomDTO
   ) {
-    this.roomService.joinRoom(roomId);
-    return ResponseEntity.ok().body(
-        BasicResponseDTO.<Void>builder()
+    JoinRoomDTO dto = this.roomService.joinRoom(roomId, requestJoinRoomDTO);
+    System.out.println(
+        BasicResponseDTO.<JoinRoomDTO>builder()
             .message(Messages.SUCCESS.getValue())
+            .data(dto)
+            .build()
+    );
+
+    return ResponseEntity.ok().body(
+        BasicResponseDTO.<JoinRoomDTO>builder()
+            .message(Messages.SUCCESS.getValue())
+            .data(dto)
             .build()
     );
   }

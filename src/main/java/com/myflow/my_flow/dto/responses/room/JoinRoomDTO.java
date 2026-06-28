@@ -6,14 +6,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
-import java.time.Instant;
-
 @Data
 @Builder
 @Accessors(chain = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class RoomDTO {
-    private String roomId;
-    private Instant lastActivity;
+public class JoinRoomDTO {
+  private String wsToken;
+  private String participantId;
+  private String displayName;
 }

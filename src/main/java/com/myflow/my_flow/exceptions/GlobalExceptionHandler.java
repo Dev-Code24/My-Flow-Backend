@@ -1,6 +1,7 @@
 package com.myflow.my_flow.exceptions;
 
 import com.myflow.my_flow.dto.responses.BasicResponseDTO;
+import com.myflow.my_flow.exceptions.room.RoomExpiredException;
 import com.myflow.my_flow.exceptions.room.RoomNotFoundException;
 import com.myflow.my_flow.types.RoomDuration;
 import org.springframework.http.HttpStatus;
@@ -47,4 +48,14 @@ public class GlobalExceptionHandler {
     );
   }
 
+  @ExceptionHandler(RoomExpiredException.class)
+  public ResponseEntity<BasicResponseDTO<Void>> handleRoomExpired(
+      RoomExpiredException exception
+  ) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+        BasicResponseDTO.<Void>builder()
+            .message(exception.getMessage())
+            .build()
+    );
+  }
 }

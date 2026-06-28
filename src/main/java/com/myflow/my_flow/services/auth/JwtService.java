@@ -34,7 +34,7 @@ public class JwtService {
         .setClaims((extraClaims))
         .setSubject(user.getEmail())
         .setIssuedAt(new Date(System.currentTimeMillis()))
-        .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration.toMillis()))
+        .setExpiration(new Date(System.currentTimeMillis() + duration.toMillis()))
         .signWith(getSignInKey())
         .compact();
   }
@@ -57,6 +57,24 @@ public class JwtService {
 
   public String generateToken(User user) {
     return this.generateToken(new HashMap<>(), user);
+  }
+
+  public String generateWsToken(
+      String roomId,
+      String participantId,
+      String displayName,
+      Duration duration
+  ) {
+    return Jwts.builder()
+        .claim("roomId", roomId)
+        .claim("participantId", participantId)
+        .claim("displayName", displayName)
+        .setIssuedAt(new Date())
+        .setExpiration(
+            new Date(System.currentTimeMillis() + duration.toMillis())
+        )
+        .signWith(getSignInKey())
+        .compact();
   }
 
   public<T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
