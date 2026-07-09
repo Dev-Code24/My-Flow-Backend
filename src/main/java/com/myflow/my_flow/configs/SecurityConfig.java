@@ -46,7 +46,9 @@ public class SecurityConfig {
                 "/auth/**",
                 "/actuator/**",
                 "/rooms/create",
-                "/rooms/*/join"
+                "/rooms/*/join",
+                "/share",
+                "/share/*"
             ).permitAll().anyRequest().authenticated()
         )
         .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
