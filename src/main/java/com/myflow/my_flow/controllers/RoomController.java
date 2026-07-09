@@ -24,7 +24,7 @@ public class RoomController {
   @PostMapping("/create")
   public ResponseEntity<BasicResponseDTO<CreateRoomDTO>> createRoom(
       @Valid @RequestBody RequestCreateRoomDTO requestCreateRoomDto
-      ) {
+  ) {
     CreateRoomDTO newRoom = this.roomService.createRoom(requestCreateRoomDto.getDuration());
 
     return ResponseEntity.status(HttpStatus.CREATED).body(
@@ -40,12 +40,6 @@ public class RoomController {
       @PathVariable String roomId,  @Valid @RequestBody RequestJoinRoomDTO requestJoinRoomDTO
   ) {
     JoinRoomDTO dto = this.roomService.joinRoom(roomId, requestJoinRoomDTO);
-    System.out.println(
-        BasicResponseDTO.<JoinRoomDTO>builder()
-            .message(Messages.SUCCESS.getValue())
-            .data(dto)
-            .build()
-    );
 
     return ResponseEntity.ok().body(
         BasicResponseDTO.<JoinRoomDTO>builder()
