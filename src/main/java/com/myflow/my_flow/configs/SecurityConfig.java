@@ -31,7 +31,7 @@ public class SecurityConfig {
   public SecurityConfig(
       AuthenticationProvider authenticationProvider,
       JwtAuthenticationFilter jwtAuthenticationFilter
-      ) {
+  ) {
     this.authenticationProvider = authenticationProvider;
     this.jwtAuthenticationFilter = jwtAuthenticationFilter;
   }
@@ -41,7 +41,10 @@ public class SecurityConfig {
     http.csrf(AbstractHttpConfigurer::disable)
         .cors(Customizer.withDefaults())
         .authorizeHttpRequests((auth) -> auth
-            .dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()
+            .dispatcherTypeMatchers(
+                DispatcherType.ASYNC,
+                DispatcherType.ERROR
+            ).permitAll()
             .requestMatchers(
                 "/auth/**",
                 "/actuator/**",
