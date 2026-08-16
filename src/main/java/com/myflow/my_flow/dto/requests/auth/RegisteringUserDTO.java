@@ -1,6 +1,6 @@
 package com.myflow.my_flow.dto.requests.auth;
 
-import com.myflow.my_flow.types.AuthProvider;
+import com.myflow.my_flow.constants.AuthProvider;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

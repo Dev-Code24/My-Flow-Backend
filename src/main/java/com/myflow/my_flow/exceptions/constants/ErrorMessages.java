@@ -6,7 +6,9 @@ import lombok.Getter;
 public enum ErrorMessages {
   ROOM_NOT_FOUND("Room not found"),
   ROOM_EXPIRED("Room has expired"),
-  FLOW_NOT_FOUND("Flow not found");
+  FLOW_NOT_FOUND("Flow not found"),
+  DISPlAY_NAME_NOT_FOUND("Display name is required for guest users"),
+  DISPlAY_NAME_LENGTH_INCORRECT("Display name must be between 2 and 50 characters");
 
   private final String value;
   ErrorMessages(String value) { this.value = value; }

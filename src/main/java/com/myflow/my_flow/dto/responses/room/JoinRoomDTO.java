@@ -1,5 +1,6 @@
 package com.myflow.my_flow.dto.responses.room;
 
+import com.myflow.my_flow.constants.RoomRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,4 +16,5 @@ public class JoinRoomDTO {
   private String wsToken;
   private String participantId;
   private String displayName;
+  private RoomRole role;
 }

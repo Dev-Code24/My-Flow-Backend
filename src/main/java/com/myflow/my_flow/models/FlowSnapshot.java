@@ -23,7 +23,6 @@ import java.time.Instant;
 @Entity
 @Table(name = "flows")
 public class FlowSnapshot extends AbstractEntity {
-
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(nullable = false, columnDefinition = "jsonb")
   private JsonNode document;
