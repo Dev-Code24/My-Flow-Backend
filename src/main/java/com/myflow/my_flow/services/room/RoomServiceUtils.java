@@ -15,7 +15,7 @@ public class RoomServiceUtils {
     return switch (duration) {
       case RoomDuration.ONE_HOUR -> 3600;
       case RoomDuration.HALF_HOUR -> 1800;
-      case RoomDuration.THREE_HOUR -> 10800;
+      case RoomDuration.THREE_HOURS -> 10800;
     };
   }
 

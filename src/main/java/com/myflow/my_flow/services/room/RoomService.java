@@ -43,13 +43,18 @@ public class RoomService {
       ParticipantIdentity identity
   ) {
     Instant now = Instant.now();
+    Room room = this.roomRepository.findByCreatorId(identity.id()).orElse(null);
 
-    Room room = Room.builder()
-        .roomId(generateUniqueRoomId())
-        .creatorId(identity.id())
-        .expiresAt(now.plusSeconds(RoomServiceUtils.getSecondsFromDuration(duration)))
-        .lastActivity(now)
-        .build();
+    if (room == null || now.isAfter(room.getExpiresAt())) {
+      room = Room.builder()
+          .roomId(generateUniqueRoomId())
+          .creatorId(identity.id())
+          .expiresAt(now.plusSeconds(RoomServiceUtils.getSecondsFromDuration(duration)))
+          .lastActivity(now)
+          .build();
+    } else {
+      room.setLastActivity(now);
+    }
 
     roomRepository.save(room);
 

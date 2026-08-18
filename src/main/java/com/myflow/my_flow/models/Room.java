@@ -22,7 +22,7 @@ public class Room extends AbstractEntity {
   @Column(nullable = false, unique = true)
   private String roomId;
 
-  @Column(nullable = false, unique = true)
+  @Column(nullable = false)
   private UUID creatorId;
 
   @Column(nullable = false)

@@ -12,6 +12,4 @@ import lombok.NoArgsConstructor;
 public class RequestCreateRoomDTO {
     @NotNull(message = "Duration is required")
     private RoomDuration duration;
-
-    private String name;
 }

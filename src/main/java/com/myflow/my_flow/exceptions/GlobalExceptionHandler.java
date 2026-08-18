@@ -1,6 +1,7 @@
 package com.myflow.my_flow.exceptions;
 
 import com.myflow.my_flow.dto.responses.BasicResponseDTO;
+import com.myflow.my_flow.exceptions.constants.ErrorMessages;
 import com.myflow.my_flow.exceptions.flow.FlowNotFoundException;
 import com.myflow.my_flow.exceptions.room.DisplayNameIncorrectLengthException;
 import com.myflow.my_flow.exceptions.room.DisplayNameNotFoundException;
@@ -67,6 +68,16 @@ public class GlobalExceptionHandler {
     return error(
         HttpStatus.BAD_REQUEST,
         exception.getMessage()
+    );
+  }
+
+  @ExceptionHandler(RuntimeException.class)
+  public ResponseEntity<BasicResponseDTO<Void>> handleUnhandledExceptions(
+      RuntimeException exception
+  ) {
+    return error(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        ErrorMessages.INTERNAL_SERVER_ERROR.getValue()
     );
   }
 

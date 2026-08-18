@@ -8,4 +8,5 @@ import java.util.UUID;
 
 public interface RoomRepository extends JpaRepository<Room, UUID> {
   Optional<Room> findByRoomId(String roomId);
+  Optional<Room> findByCreatorId(UUID creator);
 }
