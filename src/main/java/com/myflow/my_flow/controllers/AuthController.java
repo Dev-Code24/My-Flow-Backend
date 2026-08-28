@@ -62,7 +62,7 @@ public class AuthController {
             .message("success")
             .data(new AuthenticatedUserDTO(
                 authenticatedUser.getEmail(),
-                authenticatedUser.getUsername()
+                authenticatedUser.getName()
             )
         ).build()
     );

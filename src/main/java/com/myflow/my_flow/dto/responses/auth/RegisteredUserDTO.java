@@ -9,5 +9,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class RegisteredUserDTO {
     private String email;
-    private String username;
+    private String name;
 }

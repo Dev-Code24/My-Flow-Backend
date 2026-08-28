@@ -13,5 +13,5 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 public class RegisteringUserDTO {
     @NotNull
-    private String email, password, username;
+    private String email, password, name;
 }

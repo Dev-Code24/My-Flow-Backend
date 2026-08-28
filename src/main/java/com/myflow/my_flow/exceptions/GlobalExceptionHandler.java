@@ -4,6 +4,7 @@ import com.myflow.my_flow.dto.responses.BasicResponseDTO;
 import com.myflow.my_flow.exceptions.flow.FlowNotFoundException;
 import com.myflow.my_flow.exceptions.room.RoomExpiredException;
 import com.myflow.my_flow.exceptions.room.RoomNotFoundException;
+import com.myflow.my_flow.exceptions.user.UserAlreadyExistsException;
 import com.myflow.my_flow.types.RoomDuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +39,18 @@ public class GlobalExceptionHandler {
     return error(
         HttpStatus.BAD_REQUEST,
         "Invalid value for parameter: " + exception.getName()
+    );
+  }
+
+  @ExceptionHandler({
+      UserAlreadyExistsException.class,
+  })
+  public ResponseEntity<BasicResponseDTO<Void>> handleUserAlreadyExists(
+      RuntimeException exception
+  ) {
+    return error(
+        HttpStatus.NOT_ACCEPTABLE,
+        exception.getMessage()
     );
   }
 

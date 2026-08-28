@@ -35,7 +35,7 @@ public class AuthService {
     }
 
     User newUser = new User()
-        .setName(user.getUsername())
+        .setName(user.getName())
         .setEmail(user.getEmail())
         .setPassword(this.passwordEncoder.encode(user.getPassword()));
 
