@@ -11,6 +11,5 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 public class AuthenticatedUserDTO {
     private String email;
-    private String username;
-    private boolean inGame;
+    private String name;
 }
