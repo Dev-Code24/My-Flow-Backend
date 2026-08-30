@@ -45,18 +45,30 @@ public class RoomService {
     Instant now = Instant.now();
     Room room = this.roomRepository.findByCreatorId(identity.id()).orElse(null);
 
-    if (room == null || now.isAfter(room.getExpiresAt())) {
+    if (room == null) {
       room = Room.builder()
           .roomId(generateUniqueRoomId())
           .creatorId(identity.id())
-          .expiresAt(now.plusSeconds(RoomServiceUtils.getSecondsFromDuration(duration)))
+          .expiresAt(
+              now.plusSeconds(
+                  RoomServiceUtils.getSecondsFromDuration(duration)
+              )
+          )
           .lastActivity(now)
           .build();
+    } else if (now.isAfter(room.getExpiresAt())) {
+      room.setRoomId(generateUniqueRoomId());
+      room.setExpiresAt(
+          now.plusSeconds(
+              RoomServiceUtils.getSecondsFromDuration(duration)
+          )
+      );
+      room.setLastActivity(now);
     } else {
       room.setLastActivity(now);
     }
 
-    roomRepository.save(room);
+    room = roomRepository.save(room);
 
     return CreateRoomDTO.builder()
         .roomId(room.getRoomId())
@@ -85,10 +97,11 @@ public class RoomService {
 
     JoinRoomDTO dto = new JoinRoomDTO();
     Duration tokenDuration = Duration.between(Instant.now(), room.getExpiresAt());
+    String participantId = identity.id().toString();
     String wsToken = this.jwtService.generateWsToken(
         room.getRoomId(),
-        dto.getParticipantId(),
-        dto.getDisplayName(),
+        participantId,
+        displayName,
         tokenDuration
     );
     RoomRole role = room.getCreatorId().equals(identity.id()) ? RoomRole.CREATOR : RoomRole.JOINER;
