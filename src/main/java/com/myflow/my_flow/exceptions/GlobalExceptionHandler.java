@@ -1,11 +1,14 @@
 package com.myflow.my_flow.exceptions;
 
 import com.myflow.my_flow.dto.responses.BasicResponseDTO;
+import com.myflow.my_flow.exceptions.constants.ErrorMessages;
 import com.myflow.my_flow.exceptions.flow.FlowNotFoundException;
+import com.myflow.my_flow.exceptions.room.DisplayNameIncorrectLengthException;
+import com.myflow.my_flow.exceptions.room.DisplayNameNotFoundException;
 import com.myflow.my_flow.exceptions.room.RoomExpiredException;
 import com.myflow.my_flow.exceptions.room.RoomNotFoundException;
 import com.myflow.my_flow.exceptions.user.UserAlreadyExistsException;
-import com.myflow.my_flow.types.RoomDuration;
+import com.myflow.my_flow.constants.RoomDuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConversionException;
@@ -56,7 +59,8 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler({
       RoomNotFoundException.class,
-      FlowNotFoundException.class
+      FlowNotFoundException.class,
+      DisplayNameNotFoundException.class,
   })
   public ResponseEntity<BasicResponseDTO<Void>> handleResourceNotFound(
       RuntimeException exception
@@ -67,13 +71,26 @@ public class GlobalExceptionHandler {
     );
   }
 
-  @ExceptionHandler(RoomExpiredException.class)
+  @ExceptionHandler({
+      RoomExpiredException.class,
+      DisplayNameIncorrectLengthException.class
+  })
   public ResponseEntity<BasicResponseDTO<Void>> handleRoomExpired(
-      RoomExpiredException exception
+      RuntimeException exception
   ) {
     return error(
         HttpStatus.BAD_REQUEST,
         exception.getMessage()
+    );
+  }
+
+  @ExceptionHandler(RuntimeException.class)
+  public ResponseEntity<BasicResponseDTO<Void>> handleUnhandledExceptions(
+      RuntimeException exception
+  ) {
+    return error(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        ErrorMessages.INTERNAL_SERVER_ERROR.getValue()
     );
   }
 
