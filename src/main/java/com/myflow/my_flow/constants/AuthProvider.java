@@ -1,4 +1,4 @@
-package com.myflow.my_flow.types;
+package com.myflow.my_flow.constants;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;

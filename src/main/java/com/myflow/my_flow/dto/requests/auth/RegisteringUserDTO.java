@@ -1,6 +1,5 @@
 package com.myflow.my_flow.dto.requests.auth;
 
-import com.myflow.my_flow.types.AuthProvider;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;

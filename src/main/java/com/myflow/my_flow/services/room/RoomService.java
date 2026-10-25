@@ -1,6 +1,8 @@
 package com.myflow.my_flow.services.room;
 
+import com.myflow.my_flow.commons.ParticipantIdentity;
 import com.myflow.my_flow.constants.RoomConstants;
+import com.myflow.my_flow.constants.RoomRole;
 import com.myflow.my_flow.dto.requests.room.RequestJoinRoomDTO;
 import com.myflow.my_flow.dto.responses.room.CreateRoomDTO;
 import com.myflow.my_flow.dto.responses.room.JoinRoomDTO;
@@ -10,7 +12,7 @@ import com.myflow.my_flow.models.Room;
 import com.myflow.my_flow.models.User;
 import com.myflow.my_flow.repository.RoomRepository;
 import com.myflow.my_flow.services.auth.JwtService;
-import com.myflow.my_flow.types.RoomDuration;
+import com.myflow.my_flow.constants.RoomDuration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -36,22 +38,51 @@ public class RoomService {
     this.roomRepository = roomRepository;
   }
 
-  public CreateRoomDTO createRoom(RoomDuration duration) {
+  public CreateRoomDTO createRoom(
+      RoomDuration duration,
+      ParticipantIdentity identity
+  ) {
     Instant now = Instant.now();
+    Room room = this.roomRepository.findByCreatorId(identity.id()).orElse(null);
 
-    Room room = Room.builder()
-        .roomId(generateUniqueRoomId())
-        .expiresAt(now.plusSeconds(this.getSecondsFromDuration(duration)))
-        .lastActivity(now)
+    if (room == null) {
+      room = Room.builder()
+          .roomId(generateUniqueRoomId())
+          .creatorId(identity.id())
+          .expiresAt(
+              now.plusSeconds(
+                  RoomServiceUtils.getSecondsFromDuration(duration)
+              )
+          )
+          .lastActivity(now)
+          .build();
+    } else if (now.isAfter(room.getExpiresAt())) {
+      room.setRoomId(generateUniqueRoomId());
+      room.setExpiresAt(
+          now.plusSeconds(
+              RoomServiceUtils.getSecondsFromDuration(duration)
+          )
+      );
+      room.setLastActivity(now);
+    } else {
+      room.setLastActivity(now);
+    }
+
+    room = roomRepository.save(room);
+
+    return CreateRoomDTO.builder()
+        .roomId(room.getRoomId())
+        .lastActivity(room.getLastActivity())
         .build();
-
-    roomRepository.save(room);
-
-    return CreateRoomDTO.builder().roomId(room.getRoomId()).lastActivity(room.getLastActivity()).build();
   }
 
-  public JoinRoomDTO joinRoom(String roomId, RequestJoinRoomDTO requestJoinRoomDTO) throws RuntimeException {
+  public JoinRoomDTO joinRoom(
+      String roomId,
+      RequestJoinRoomDTO requestJoinRoomDTO,
+      ParticipantIdentity identity
+  ) throws RuntimeException {
     Room room = this.roomRepository.findByRoomId(roomId).orElse(null);
+    String displayName = RoomServiceUtils.resolveName(requestJoinRoomDTO, identity);
 
     if (room == null) {
       throw new RoomNotFoundException();
@@ -64,29 +95,23 @@ public class RoomService {
     room.setLastActivity(Instant.now());
     this.roomRepository.save(room);
 
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     JoinRoomDTO dto = new JoinRoomDTO();
-    if (
-        auth != null &&
-        auth.isAuthenticated() &&
-        auth.getPrincipal() instanceof User user
-    ) {
-      dto.setDisplayName(user.getName());
-      dto.setParticipantId(user.getId().toString());
-    } else {
-      dto.setDisplayName(requestJoinRoomDTO.getName());
-      dto.setParticipantId(UUID.randomUUID().toString());
-    }
-
     Duration tokenDuration = Duration.between(Instant.now(), room.getExpiresAt());
+    String participantId = identity.id().toString();
     String wsToken = this.jwtService.generateWsToken(
         room.getRoomId(),
-        dto.getParticipantId(),
-        dto.getDisplayName(),
+        participantId,
+        displayName,
         tokenDuration
     );
+    RoomRole role = room.getCreatorId().equals(identity.id()) ? RoomRole.CREATOR : RoomRole.JOINER;
 
-    return dto.setWsToken(wsToken);
+    dto.setParticipantId(identity.id().toString());
+    dto.setDisplayName(displayName);
+    dto.setWsToken(wsToken);
+    dto.setRole(role);
+
+    return dto;
   }
 
   // TODO: Find a better way to generate Unique RoomID
@@ -103,13 +128,5 @@ public class RoomService {
     } while (existingRoom.isPresent());
 
     return code;
-  }
-
-  private int getSecondsFromDuration(RoomDuration duration) {
-    return switch (duration) {
-      case RoomDuration.ONE_HOUR -> 3600;
-      case RoomDuration.HALF_HOUR -> 1800;
-      case RoomDuration.THREE_HOUR -> 10800;
-    };
   }
 }
