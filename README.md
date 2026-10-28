@@ -16,17 +16,7 @@ MyFlow separates normal application APIs from real-time collaboration.
 
 ## High-Level Design
 
-```mermaid
-flowchart LR
-    FE[MyFlow Frontend]
-
-    FE -->|REST| API[Spring Boot API]
-    API --> SERVICE[Room & Share Services]
-    SERVICE --> DB[(PostgreSQL)]
-
-    FE -->|WebSocket| RT[Node.js + Yjs Service]
-    RT --> ROOMS[Active Rooms]
-```
+<img width="2480" height="1379" alt="Screenshot 2026-10-28 at 8 18 19 PM" src="https://github.com/user-attachments/assets/b893c192-bd1f-459b-9322-ea46bc24be80" />
 
 ## Why Two Backend Paths?
 
@@ -46,7 +36,6 @@ REST APIs and collaborative updates have very different workloads.
 - live document updates
 - Yjs synchronization
 - participant join/leave events
-- live cursors and presence
 
 This keeps high-frequency whiteboard traffic away from normal request/response APIs.
 
